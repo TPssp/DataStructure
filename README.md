@@ -18,7 +18,7 @@ In this repository, I aim to provide practical implementations of fundamental da
 
 Currently, I have implemented the following data structures:
 
-- [Sequential List](./cpp)
+- [Sequential List](./SqList.cpp)
 
 Each data structure is organized in its own directory, containing the source code and accompanying documentation.
 
