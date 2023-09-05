@@ -130,6 +130,5 @@ int main()
     
     //销毁表
     DestoryList(L);
-
     return 0;
 }
