@@ -28,7 +28,6 @@ I have chosen to implement these data structures in the following programming la
 
 - [C++](./cpp)
 
-
 ## How to Use
 
 To use any of the data structures in this repository, follow these steps:
