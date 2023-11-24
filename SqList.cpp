@@ -33,13 +33,13 @@ Status InitList_Sq(SqList &L)
     L.length = 0;
     L.listsize = LIST_INIT_SIZE;
     return OK;
-} 
+} //InitList_Sq
 
 Status DestoryList(SqList &L)
 {
     free(L.elem);
     return OK;
-} 
+} //DestoryList
 
 Status ListEmpty(SqList L)
 {
@@ -47,12 +47,12 @@ Status ListEmpty(SqList L)
         return TRUE;
     else
         return FALSE;
-}
+} //ListEmpty
 
 Status ListLength(SqList L)
 {
     return L.length;
-}
+} //ListLength
 
 Status PriorElem(SqList L, int cur_e, ElemType &pre_e)
 {
@@ -61,7 +61,7 @@ Status PriorElem(SqList L, int cur_e, ElemType &pre_e)
     else
         pre_e = L.elem[cur_e - 1];
         return OK;
-}
+} //PriorElem
 
 Status ListInsert_Sq(SqList &L, int i, ElemType e)
 {
@@ -88,7 +88,7 @@ Status ListInsert_Sq(SqList &L, int i, ElemType e)
     *q = e;
     ++L.length;
     return OK;
-}
+} //ListInsert_Sq
 
 Status ListDelete_Sq(SqList &L, int i, ElemType &e)
 {
@@ -103,7 +103,7 @@ Status ListDelete_Sq(SqList &L, int i, ElemType &e)
     }
     --L.length;
     return OK;
-}
+} //ListDelete_Sq
 
 int LocateElem_Sq(SqList L, ElemType e, Status (*compare)(ElemType, ElemType))
 {
@@ -117,7 +117,7 @@ int LocateElem_Sq(SqList L, ElemType e, Status (*compare)(ElemType, ElemType))
         return i;
     else
         return 0;
-}
+} //LocateElem_Sq
 
 Status compare(ElemType a, ElemType b)
 {
@@ -138,7 +138,7 @@ Status compare(ElemType a, ElemType b)
         return FALSE;
     }
     return TRUE;
-}
+} //compare
 
 int main()
 {
