@@ -24,7 +24,7 @@ typedef struct
     int length;
     int listsize;
 } SqList;
-
+  
 Status InitList_Sq(SqList &L)
 {
     L.elem = (ElemType *)malloc(LIST_INIT_SIZE * sizeof(ElemType));
