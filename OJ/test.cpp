@@ -1,143 +1,144 @@
-#include <stack>
-#include <string>
 #include <iostream>
+#include <stdlib.h>
+#include <string>
+#include <cctype>
 using namespace std;
+#define OVERFLOW 1
+#define OK 1
+#define TRUE 1
+#define FALSE 0
+#define ERROR 0
+#define STACK_INIT_SIZE 100
+#define INCREMENT 10
 
-bool isOperator(char c)
+typedef struct Stack
 {
-    return (c == '+' || c == '-' || c == '*' || c == '/');
+    char *base;
+    char *top;
+    // int stacksize;
+} Stack;
+
+typedef struct QNode
+{
+    char data;
+    struct QNode *next;
+} QNode;
+
+typedef struct
+{
+    QNode *front;
+    QNode *rear;
+} LinkQueue;
+
+void InitStack(Stack &S)
+{
+    S.base = (char *)malloc(sizeof(char) * STACK_INIT_SIZE);
+    if (!S.base)
+        exit(OVERFLOW);
+    S.top = S.base;
 }
 
-int getPriority(char op)
+void Push(Stack &S, char e)
 {
-    if (op == '*' || op == '/')
+    if (S.top - S.base >= STACK_INIT_SIZE)
     {
-        return 2;
+        S.base = (char *)realloc(S.base, sizeof(char) * (STACK_INIT_SIZE + INCREMENT));
+        S.top = S.base + STACK_INIT_SIZE;
     }
-    else if (op == '+' || op == '-')
-    {
-        return 1;
-    }
-    else
-        return 0;
+    *S.top = e;
+    S.top++;
 }
 
-int evalExpression(string expression)
+void Pop(Stack &S, char &e)
 {
-    stack<char> OPTR;
-    stack<int> OPND;
-    for (int i = 0; i < expression.length(); i++)
-    {
-        char c = expression[i];
+    // if(S.base==S.top) return ERROR;
+    e = *(S.top - 1);
+    S.top--;
+}
 
-        if (isdigit(c))
-        {
-            int num = 0;
-            while (i < expression.length() && isdigit(expression[i]))
-            {
-                num = num * 10 + (expression[i] - '0');
-                i++;
-            }
-            OPND.push(num);
-            i--;
-        }
-        else if (c == '(')
-        {
-            OPTR.push(c);
-        }
-        else if (c == ')')
-        {
-            // 遇到右括号，将栈内运算符依次弹出并计算，直到遇到左括号
-            while (!OPTR.empty() && OPTR.top() != '(')
-            {
-                int b = OPND.top();
-                OPND.pop();
-                int a = OPND.top();
-                OPND.pop();
-                char op = OPTR.top();
-                OPTR.pop();
-                if (op == '+')
-                {
-                    OPND.push(a + b);
-                }
-                else if (op == '-')
-                {
-                    OPND.push(a - b);
-                }
-                else if (op == '*')
-                {
-                    OPND.push(a * b);
-                }
-                else if (op == '/')
-                {
-                    OPND.push(a / b);
-                }
-            }
-            OPTR.pop(); // 弹出左括号
-        }
-        else if (isOperator(c))
-        {
-            while (!OPTR.empty()&&getPriority(OPTR.top()) >= getPriority(c))
-            {
-                int b = OPND.top();
-                OPND.pop();
-                int a = OPND.top();
-                OPND.pop();
-                char op = OPTR.top();
-                OPTR.pop();
-                if (op == '+')
-                {
-                    OPND.push(a + b);
-                }
-                else if (op == '-')
-                {
-                    OPND.push(a - b);
-                }
-                else if (op == '*')
-                {
-                    OPND.push(a * b);
-                }
-                else if (op == '/')
-                {
-                    OPND.push(a / b);
-                }
-            }
-            OPTR.push(c);
-        }
-    }
-    while (!OPTR.empty())
-    {
-        int b = OPND.top();
-        OPND.pop();
-        int a = OPND.top();
-        OPND.pop();
-        char op = OPTR.top();
-        OPTR.pop();
-        if (op == '+')
-        {
-            OPND.push(a + b);
-        }
-        else if (op == '-')
-        {
-            OPND.push(a - b);
-        }
-        else if (op == '*')
-        {
-            OPND.push(a * b);
-        }
-        else if (op == '/')
-        {
-            OPND.push(a / b);
-        }
-    }
-    return OPND.top();
+void InitQueue(LinkQueue &Q)
+{
+    Q.front = Q.rear = (QNode *)malloc(sizeof(QNode));
+    if (!Q.front)
+        exit(OVERFLOW);
+    Q.front->next = NULL;
+}
+
+void EnQueue(LinkQueue &Q, char e)
+{
+    QNode *p = (QNode *)malloc(sizeof(QNode));
+    p->data = e;
+    p->next = NULL;
+    Q.rear->next = p;
+    Q.rear = p;
+}
+
+void DeQueue(LinkQueue &Q, char &e)
+{
+    QNode *p = Q.front->next;
+    e = p->data;
+    Q.front->next = p->next;
+    if (Q.rear == p)
+        Q.front = Q.rear;
+    free(p);
 }
 
 int main()
 {
-    string expression;
-    getline(cin, expression);
-    int result = evalExpression(expression);
-    cout << result << endl;
+    int flag = 1;
+    string s;
+    getline(cin, s);
+    int length = s.length();
+    Stack S;
+    InitStack(S);
+    LinkQueue Q;
+    InitQueue(Q);
+    if (length % 2 == 0)
+    {
+        for (int i = 0; i < length / 2; i++)
+        {
+            Push(S, s[i]);
+        }
+        for (int i = (length / 2); i < length; i++)
+        {
+            EnQueue(Q, s[i]);
+        }
+
+        for (int i = 0; i < length / 2; i++)
+        {
+            char c, d;
+            Pop(S, c);
+            DeQueue(Q, d);
+            if (c != d)
+            {
+                flag = 0;
+            }
+        }
+    }
+
+    if (length % 2 != 0)
+    {
+        for (int i = 0; i < length / 2; i++)
+        {
+            Push(S, s[i]);
+        }
+        for (int i = (length / 2) + 1; i < length; i++)
+        {
+            EnQueue(Q, s[i]);
+        }
+
+        for (int i = 0; i < length / 2; i++)
+        {
+            char c, d;
+            Pop(S, c);
+            DeQueue(Q, d);
+            if (c != d)
+            {
+                flag = 0;
+            }
+        }
+    }
+
+    printf("%d", flag);
     return 0;
 }
