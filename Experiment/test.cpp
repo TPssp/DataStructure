@@ -1,104 +1,53 @@
 #include <stdio.h>
 #include <stdlib.h>
-#include <cstring>
-// 定义二叉树结点结构
-struct TreeNode {
-    char data;
-    struct TreeNode* left;
-    struct TreeNode* right;
-};
+#include <string.h>
 
-// 函数用于创建新的二叉树结点
-struct TreeNode* createNode(char data) {
-    // struct TreeNode* newNode = (struct TreeNode*)malloc(sizeof(struct TreeNode));
-    struct TreeNode* newNode = new TreeNode;
-    newNode->data = data;
-    newNode->left = NULL;
-    newNode->right = NULL;
-    return newNode;
-}
+// 学生结构体定义
+typedef struct {
+    char id[7];      // 学号
+    char name[9];    // 姓名
+    int score;       // 成绩
+} Student;
 
-// 函数用于在中序序列中查找根节点的位置
-int findRootIndex(char inorder[], int start, int end, char rootValue) {
-    for (int i = start; i <= end; i++) {
-        if (inorder[i] == rootValue) {
-            return i;
-        }
-    }
-    return -1;  // 根节点未找到
-}
+// 比较函数，用于qsort排序
+int compare(const void* a, const void* b) {
+    const Student* studentA = (const Student*)a;
+    const Student* studentB = (const Student*)b;
 
-// 函数用于构建二叉树
-struct TreeNode* buildTree(char preorder[], char inorder[], int* preIndex, int inStart, int inEnd) {
-    if (inStart > inEnd) {
-        return NULL;
+    // 根据指定列进行排序
+    int result;
+    if (studentA->score == studentB->score) {
+        // 当成绩相同时，按学号递增排序
+        result = strcmp(studentA->id, studentB->id);
+    } else {
+        // 按成绩递增排序
+        result = studentA->score - studentB->score;
     }
 
-    // 从先序序列中取出下一个结点的值
-    char rootValue = preorder[*preIndex];
-    (*preIndex)++;
-
-    // 创建当前根节点
-    struct TreeNode* root = createNode(rootValue);
-
-    // 如果中序序列中还有左子树，递归构建左子树
-    int rootIndex = findRootIndex(inorder, inStart, inEnd, rootValue);
-    if (rootIndex != -1) {
-        root->left = buildTree(preorder, inorder, preIndex, inStart, rootIndex - 1);
-        root->right = buildTree(preorder, inorder, preIndex, rootIndex + 1, inEnd);
-    }
-
-    return root;
-}
-
-// 函数用于计算二叉树的深度
-int findDepth(struct TreeNode* root) {
-    if (root == NULL) {
-        return 0;
-    }
-
-    int leftDepth = findDepth(root->left);
-    int rightDepth = findDepth(root->right);
-
-    return (leftDepth > rightDepth) ? (leftDepth + 1) : (rightDepth + 1);
-}
-
-// 函数用于计算二叉树的叶子节点数量
-int findLeafCount(struct TreeNode* root) {
-    if (root == NULL) {
-        return 0;
-    }
-
-    if (root->left == NULL && root->right == NULL) {
-        return 1;
-    }
-
-    int leftLeaves = findLeafCount(root->left);
-    int rightLeaves = findLeafCount(root->right);
-
-    return leftLeaves + rightLeaves;
+    return result;
 }
 
 int main() {
-    char preorder[100];
-    char inorder[100];
+    int N, C;
+    scanf("%d %d", &N, &C);
 
-    // 读取输入的先序和中序序列
-    scanf("%s", preorder);
-    scanf("%s", inorder);
+    Student* students = (Student*)malloc(N * sizeof(Student));
 
-    int preIndex = 0;
-    int inStart = 0;
-    int inEnd = strlen(inorder) - 1;
+    // 读入学生信息
+    for (int i = 0; i < N; ++i) {
+        scanf("%s %s %d", students[i].id, students[i].name, &students[i].score);
+    }
 
-    // 构建二叉树
-    struct TreeNode* root = buildTree(preorder, inorder, &preIndex, inStart, inEnd);
+    // 使用qsort进行排序
+    qsort(students, N, sizeof(Student), compare);
 
-    // 计算深度和叶子节点数量
-    int depth = findDepth(root);
-    int leafCount = findLeafCount(root);
+    // 输出排序后的结果
+    for (int i = 0; i < N; ++i) {
+        printf("%s %s %d\n", students[i].id, students[i].name, students[i].score);
+    }
 
-    printf("%d\n%d\n", depth, leafCount);
+    // 释放内存
+    free(students);
 
     return 0;
 }
